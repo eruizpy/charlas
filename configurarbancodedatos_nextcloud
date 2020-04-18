@@ -1,0 +1,10 @@
+Conexión db Nextcloud
+-El siguiente paso es darle click a Storage & database llenando los datos de conexión a la db en MariaDB
+
+Data folder: /opt/nextcloud/data
+Configure the database: MySQL/MariaDB
+usuario db
+contraseña usuario db
+base de datos creada para nextcloud
+localhost:3306
+Damos click al botón Finish setup

@@ -1,0 +1,54 @@
+Como recomendación de seguridad de la comunidad, no debemos instalar en el home default de apache (/var/www/html)
+
+-Instalaremos en /opt. Descargamos la ultima versión disponible en formato zip desde el URL oficial Nextcloud
+cd /opt
+wget -c https://download.nextcloud.com/server/releases/nextcloud-14.0.3.zip
+
+-Por seguridad, también descargamos el sha256 y verificamos la integridad del zip que acabamos de descargar (créeme, esto te puede evitar problemas después)
+wget -c https://download.nextcloud.com/server/releases/nextcloud-14.0.3.zip.sha256
+sha256sum -c nextcloud-14.0.3.zip.sha256 < nextcloud-14.0.3.zip
+nextcloud-14.0.3.zip: La suma coincide
+
+-Extraemos los ficheros del archivo comprimido y cambiamos de forma recursiva dueño y grupo a apache en todo el árbol de directorios nextcloud
+unzip nextcloud-14.0.3.zip
+chown -R apache.apache nextcloud/
+
+Personalizamos Apache para Nextcloud Español
+Como instalamos nextcloud fuera del home default de paginas web apache, nos creamos un conf y lo personalizamos
+
+-Creamos un conf con directivas alias y directory
+vi /etc/httpd/conf.d/nextcloud.conf
+Alias /nextcloud/ "/opt/nextcloud/"
+
+<Directory "/opt/nextcloud">
+Options Indexes FollowSymlinks
+AllowOverride All
+Require all granted
+</Directory>
+
+-Como manejaremos contenido pesado, es buena idea acelerar nuestra nube con el modulo php de opcache
+
+Configuramos opcache y lo activamos en su ini
+vi /etc/php.d/10-opcache.ini
+zend_extension=opcache
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=10000
+opcache.revalidate_freq=1
+opcache.save_comments=1
+opcache.blacklist_filename=/etc/php.d/opcache*.blacklist
+opcache.huge_code_pages=1
+
+-Reiniciamos apache para que tome los cambios
+systemctl restart httpd
+
+Usuario administrador Nextcloud
+Para administrar nuestra nube debemos crearnos un usuario administrador
+
+-Abrimos un navegador en otro equipo desde el cual podamos conectarnos a nuestro servidor linux centos con Nextcloud
+
+Navegamos al URL http://IP-SERVIDOR-CENTOS/nextcloud/ (haz el cambio a tu ip o dominio web)
+
+Se nos pedirá un nombre de usuario y su contraseña para el nuevo administrador (en este articulo elijo admin). El campo contraseña nos dirá con código de colores que tan fuerte es la escrita

@@ -1,0 +1,22 @@
+Requerimientos para instalar Nextcloud
+Linux Centos (para efectos de este tutorial, pero puede instalarse también en otras distribuciones)
+MariaDB 5.5 o superior. PostgreSQL 9 o superior
+Apache 2.4
+PHP 7
+512mb RAM mínimo recomendado
+Ya vistos los requerimientos mínimos (básicamente un stack LAMP) para instalar nuestra nube NextCloud Español pasemos a ver que clientes le podremos conectar para usarla
+
+Clientes Nextcloud y sus versiones mínimas
+Microsoft Windows 7
+macOS Lion 64bits
+Linux
+mobile iOS 9
+Android 4.x
+No quieres instalar un cliente Nextcloud, no hay problema, también podemos conectarnos a nuestra nube privada por medio de un navegador. Aquí debajo te listo cuales
+
+Navegadores y sus versiones mínimas para Nextcloud Español
+Microsoft Internet Explorer 11
+Microsoft Edge
+Mozilla Firefox
+Google Chrome o Chromium
+Apple Safari

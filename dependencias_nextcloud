@@ -1,0 +1,68 @@
+Dependencias para Nextcloud
+-Comenzamos instalando algunas dependencias necesarias, si ya tienes un Stack LAMP, posiblemente tengas la mayoría ya instalada
+yum install httpd php php-mysql sqlite php-dom php-mbstring php-pdo php-json php-xml php-zip php-gd curl php-curl php-pear php-opcache php-intl wget mariadb-server mariadb bzip2 firewalld wget unzip mlocate
+
+-También necesitaremos instalar los repositorios Epel y Remi. Recuerda verificar siempre instalar la versión mas actual disponible
+yum install epel-release
+yum install http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+-Instalamos el modulo php-mcrypt para el cifrado (disponible en los repositorios que acabamos de instalar)
+yum install php-mcrypt
+
+Personalizamos PHP para Nextcloud
+-Los valores default de PHP no nos servirán, por lo cual los modificaremos
+vi /etc/php.ini
+post_max_size = 511M
+upload_max_filesize = 511M
+memory_limit = 512M
+
+-Reiniciamos el servicio de Apache para que tome los cambios en PHP
+systemctl restart httpd
+
+Nextcloud MariaDB
+-Nuestro motor de bases de datos para nuestra nube Nextcloud sera MariaDB
+
+Crearemos una db y un usuario con privilegios totales sobre ella para mayor seguridad (no es recomendable hacerlo con la cuenta root). Haz los cambios de usuario y contraseña según tu caso
+mysql -u root -p
+Enter password:
+Welcome to the MariaDB monitor. Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.3.10-MariaDB MariaDB Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> create database nextcloudb;
+Query OK, 1 row affected (0.000 sec)
+
+MariaDB [(none)]> grant all on nextcloudb.* to 'ncusr'@'localhost' identified by 'contraseña';
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [(none)]> flush privileges;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [(none)]> exit;
+Bye
+
+iptables Nextcloud
+-Tu nube con tu información debe ser segura y para esto usaremos iptables protegiéndola
+
+Activamos el servicio firewalld para que se inicie cuando haga boot nuestro server Centos, lo iniciamos y verificamos su correcto funcionamiento
+systemctl enable firewalld
+systemctl start firewalld
+systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+Active: active (running) since vie 2018-10-26 16:57:14 UTC; 11min ago
+Docs: man:firewalld(1)
+Main PID: 51 (firewalld)
+CGroup: /system.slice/firewalld.service
+└─51 /usr/bin/python -Es /usr/sbin/firewalld --nofork --nopid
+
+-Abrimos los puertos http y https (80 y 443)
+
+Reiniciamos el servicio firewalld para que tome los cambios a las reglas
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --permanent --zone=public --add-service=https
+firewall-cmd --reload
